@@ -9,9 +9,19 @@ pipeline {
             }
         }
 
-        stage('Deploy to Apache') {
+        stage('Build Docker Image') {
             steps {
-                sh 'sudo cp -r * /var/www/html/'
+                sh 'docker build -t mywebsite .'
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                sh '''
+                docker stop mycontainer || true
+                docker rm mycontainer || true
+                docker run -d -p 80:80 --name mycontainer mywebsite
+                '''
             }
         }
 
